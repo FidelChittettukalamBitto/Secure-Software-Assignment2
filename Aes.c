@@ -118,6 +118,103 @@ uint8_t * getState() {
     return state_array;
 }
 
+void printState(int curr_round) {
+    if(curr_round == 0)
+        printf("\nPlain Text:\n");
+    else if(curr_round == 1)
+        printf("\nInital Round (Only AddRoundkey):\n-----------\n");
+    else if(curr_round == MAX_ROUNDS)
+        printf("\nCipherText (Last Round):\n");
+    else
+        printf("\nRound %d\n-----------\n", curr_round-1);
+    for(int c=0; c<STATE_SIZE; c++) {
+        for(int r=0; r<STATE_SIZE; r++) {
+            printf("%02x ", state[r][c]);
+        }
+        printf("  ");
+    }
+    printf("\n");
+}
+
+
+void printSubKeys() {
+    printf("\nKey Schedule:\n");
+    for(int k=0; k<MAX_ROUNDS; k++) {
+        for(int c=0; c<STATE_SIZE; c++) {
+            for(int r=0; r<STATE_SIZE; r++) {
+                printf("%x", sub_keys[k][r][c]);
+            }
+            printf(",");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+
+void assertStateIsOrigMesg() {
+    for(int r=0; r<STATE_SIZE; r++) {
+        for(int c=0; c<STATE_SIZE; c++) {
+            if (state[r][c] != orig_msg[r][c]){
+                printf("\nAssertion Failure: State and original message are not same!\n");
+                assert(state[r][c] == orig_msg[r][c]);
+            }
+        }
+    }
+    printf("\nAssertion Passed: State is same as original message\n");
+}
+
+
+
+
+
+void _generateSubkeys() {
+
+    int curr_round = 0;
+
+    // copy key for intial round round
+    memcpy(sub_keys[curr_round], key, sizeof(uint8_t) * STATE_SIZE * STATE_SIZE);
+    curr_round += 1;
+
+    // round constant
+    uint8_t rci[11] = {0, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
+
+    while (curr_round < MAX_ROUNDS) {
+
+        // copy previous rounds last column and move top byte to the bottom
+        sub_keys[curr_round][0][0] = sub_keys[curr_round-1][1][STATE_SIZE-1];
+        sub_keys[curr_round][1][0] = sub_keys[curr_round-1][2][STATE_SIZE-1];
+        sub_keys[curr_round][2][0] = sub_keys[curr_round-1][3][STATE_SIZE-1];
+        sub_keys[curr_round][3][0] = sub_keys[curr_round-1][0][STATE_SIZE-1];
+        
+        // Map first column using sbox
+        sub_keys[curr_round][0][0] = SBOX_LOOKUP(sbox, sub_keys[curr_round][0][0]);
+        sub_keys[curr_round][1][0] = SBOX_LOOKUP(sbox, sub_keys[curr_round][1][0]);
+        sub_keys[curr_round][2][0] = SBOX_LOOKUP(sbox, sub_keys[curr_round][2][0]);
+        sub_keys[curr_round][3][0] = SBOX_LOOKUP(sbox, sub_keys[curr_round][3][0]);
+
+        // apply round constant
+        sub_keys[curr_round][0][0] ^= rci[curr_round];
+
+        // xor with previous rounds first column
+        sub_keys[curr_round][0][0] ^= sub_keys[curr_round-1][0][0];
+        sub_keys[curr_round][1][0] ^= sub_keys[curr_round-1][1][0];
+        sub_keys[curr_round][2][0] ^= sub_keys[curr_round-1][2][0];
+        sub_keys[curr_round][3][0] ^= sub_keys[curr_round-1][3][0];
+
+        // other 3 columns
+        for (int c=1; c<STATE_SIZE; c++){
+            for (int r=0; r<STATE_SIZE; r++){
+                // XOR previous column with previous round column c
+                sub_keys[curr_round][r][c] = sub_keys[curr_round][r][c-1] ^ sub_keys[curr_round-1][r][c];
+            }
+        }
+        curr_round += 1;
+    }
+
+    printSubKeys();
+}
+
 
 
 
