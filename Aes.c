@@ -198,6 +198,9 @@ void aes_encrypt_block(unsigned char *block, unsigned char *cipher_key) {
     add_round_key(block, round_keys + AES_ROUNDS * AES_BLOCK_SIZE);
 
     free(round_keys);
+	unsigned char *output =
+      (unsigned char *)malloc(sizeof(unsigned char) * BLOCK_SIZE);
+  return output;
 }
 
 // AES decryption of a single block
@@ -221,4 +224,7 @@ void aes_decrypt_block(unsigned char *block, unsigned char *cipher_key) {
     add_round_key(block, round_keys);
 
     free(round_keys);
+	unsigned char *output =
+      (unsigned char *)malloc(sizeof(unsigned char) * BLOCK_SIZE);
+  return output;
 }
