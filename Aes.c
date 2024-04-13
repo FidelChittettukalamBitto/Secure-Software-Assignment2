@@ -74,6 +74,49 @@ void encrypt() {
     curr_round += 1;
     printState(curr_round);
 }
+void decrypt() {
+    printf("\n\nDECRYPTION PROCESS\n");
+    printf("------------------\n");
+
+    // start at 11 to print cipher first
+    int curr_round = MAX_ROUNDS;
+
+     printState(curr_round);
+    curr_round -= 1;
+
+    // final round
+    _addRoundKey(curr_round);
+    _invShiftRows();
+    _subByte(inv_sbox);
+    printState(curr_round);
+    curr_round -= 1;
+
+    // 9 rounds
+    while (curr_round > 0) {
+        _addRoundKey(curr_round);
+        _invMixColumns();
+        _invShiftRows();
+        _subByte(inv_sbox);
+        printState(curr_round);
+        curr_round -= 1;
+    }
+
+    // initial round
+    _addRoundKey(curr_round);
+    printState(curr_round);
+    printf("\nEND of Decryption\n------------------\n");
+}
+
+
+uint8_t * getState() {
+    uint8_t * state_array = malloc(sizeof(uint8_t) * STATE_SIZE * STATE_SIZE);
+    for(int r=0; r<STATE_SIZE; r++) {
+        for(int c=0; c<STATE_SIZE; c++) {
+            state_array[r * STATE_SIZE + c] = state[r][c];
+        }
+    }
+    return state_array;
+}
 
 
 
