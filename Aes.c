@@ -1,4 +1,12 @@
-#define KEY_SIZE 4
+#include "rijndael.h"
+
+
+int main(int argc, char *argv[])
+{
+    if(argc < 5) {
+        printf("ERROR: expecting 4 paths \"key_file, plaintext_file, sbox_file, inv_sbox_file\"\n");
+        exit(-1);
+    }#define KEY_SIZE 4
 #define STATE_SIZE 4
 #define SBOX_SIZE 16
 #define MAX_ROUNDS 11
