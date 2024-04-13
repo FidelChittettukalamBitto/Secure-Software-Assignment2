@@ -347,15 +347,13 @@ void inverseByteSubShiftRow(unsigned char * plainText)
 aes_encrypt_block(unsigned char *plaintext, unsigned char *key)
 {
     unsigned char * state = malloc(16);
-    //unsigned char * expandedKey = malloc(176);
-    //expandedKey = keyExpansion(Key);
-    //key addition for the first round
+    //This is the key addition for the 1st round
     for (int i = 0; i < 16; ++i)
     {
-     state[i] = plainText[i] ^ expandedKey[i];
+     state[i] = plainText[i] ^ Key[i];
     }
 
-    //now the 9 rounds begin
+    //this one is for the nineth round
     for(int rounds = 1; rounds<10; rounds++)
     {
         byteSubShiftRow(state);
@@ -364,29 +362,29 @@ aes_encrypt_block(unsigned char *plaintext, unsigned char *key)
         int loc = rounds*16;
         while(counter<16)
         {
-            state[counter] ^= expandedKey[loc];
+            state[counter] ^= Key[loc];
             loc++;
             counter++;
         }
     }
 
-    //10th round
+    //This one is the last and final 10th round
     byteSubShiftRow(state);
     for(int i=0; i<16;i++)
     {
-        cipher[i] = state[i] ^ expandedKey[i+160];
+        cipher[i] = state[i] ^ Key[i+160];
     }
     free(state);
 }
 
-void AESDecryption(unsigned char * cipher, unsigned char * expandedKey, unsigned char * plainText)
+aes_decrypt_block(unsigned char *ciphertext, unsigned char *key)
 {
     unsigned char * state = malloc(16);
     //key whitening
     for (int i = 0; i < 16; ++i)
-        state[i] = cipher[i] ^ expandedKey[160+i];
+        state[i] = cipher[i] ^ Key[160+i];
 
-    // 9 rounds of decryption
+    // Now the 9 round of decryption
     for (int rounds = 9; rounds >0 ; rounds--)
     {
         inverseByteSubShiftRow(state);
@@ -394,17 +392,17 @@ void AESDecryption(unsigned char * cipher, unsigned char * expandedKey, unsigned
         int loc = 16*rounds;
         while(counter<16)
         {
-            state[counter] ^= expandedKey[loc];
+            state[counter] ^= Key[loc];
             loc++;
             counter++;
         }
         inverseMixedColumn(state);
     }
 
-    //final 10th round of decryption
+    /The last 10th round of decryption
     inverseByteSubShiftRow(state);
     for(int i =0; i<16; i++)
-        plainText[i] = state[i] ^ expandedKey[i];
+        plainText[i] = state[i] ^Key[i];
 
     free(state);
 }
