@@ -1,4 +1,4 @@
-#include "aes.h"
+#include "rijndael.h"
 
 
 int main(int argc, char *argv[])
