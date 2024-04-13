@@ -1,20 +1,27 @@
-/*
- * TODO: Add your name and student number here, along with
- *       a brief description of this code.
- */
+#ifndef AES_H
+#define AES_H
 
-#ifndef RIJNDAEL_H
-#define RIJNDAEL_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+# include <assert.h> 
 
-#define BLOCK_ACCESS(block, row, col) (block[(row * 4) + col])
-#define BLOCK_SIZE 16
+// Functions
+// Initialize key, sbox and state
+void initialize(char * key_file, char * state_file, char* sbox_file, char* inv_sbox_file);
+// Encrypt state using AES scheme
+void encrypt();
+// Decrypt state using DES scheme
+void decrypt();
+// Get current state, (free after using it)
+uint8_t * getState();
+// Print current state
+void printState();
+// Print sub keys generated from key expansion
+void printSubKeys();
+// Assert if state is original message
+void assertStateIsOrigMesg();
 
-/*
- * These should be the main encrypt/decrypt functions (i.e. the main
- * entry point to the library for programmes hoping to use it to
- * encrypt or decrypt data)
- */
-unsigned char *aes_encrypt_block(unsigned char *plaintext, unsigned char *key);
-unsigned char *aes_decrypt_block(unsigned char *ciphertext, unsigned char *key);
 
 #endif
