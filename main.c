@@ -1,24 +1,20 @@
-#include "rijndael.h"
+/*
+ * Name:Fidel Chittettukalam Bitto
+ Student Id: D23125253
+ */
 
+#ifndef RIJNDAEL_H
+#define RIJNDAEL_H
 
-int main(int argc, char *argv[])
-{
-    if(argc < 5) {
-        printf("ERROR: expecting 4 paths \"key_file, plaintext_file, sbox_file, inv_sbox_file\"\n");
-        exit(-1);
-    }
+#define BLOCK_ACCESS(block, row, col) (block[(row * 4) + col])
+#define BLOCK_SIZE 16
 
-    char* key_file = NULL, *state_file = NULL, *sbox_file = NULL, *inv_sbox_file = NULL;
-    key_file = argv[1];
-    state_file = argv[2];
-    sbox_file = argv[3];
-    inv_sbox_file = argv[4];
+/*
+ * These should be the main encrypt/decrypt functions (i.e. the main
+ * entry point to the library for programmes hoping to use it to
+ * encrypt or decrypt data)
+ */
+unsigned char *aes_encrypt_block(unsigned char *plaintext, unsigned char *key);
+unsigned char *aes_decrypt_block(unsigned char *ciphertext, unsigned char *key);
 
-    initialize(key_file, state_file, sbox_file, inv_sbox_file);
-    encrypt();
-    decrypt();
-    assertStateIsOrigMesg();
-
-    printf("\nProgram ended Successfully\n");
-    return 0;
-}
+#endif
