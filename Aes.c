@@ -99,5 +99,33 @@ void add_round_key(unsigned char *block, unsigned char *round_key) {
 }
 
 // KeyExpansion operation
-unsigned char *expand_key(unsigned char *cipher_key) {
-    unsigned char *expanded_keys = (unsigned char *)malloc(sizeof(unsigned char
+unsigned char *expand_key(const unsigned char *cipher_key) {
+    unsigned char *round_keys = (unsigned char *)malloc(AES_ROUND_KEYS_SIZE);
+    if (round_keys == NULL) {
+        return NULL;
+    }
+
+    memcpy(round_keys, cipher_key, AES_KEY_SIZE);
+
+    for (int i = AES_KEY_SIZE; i < AES_ROUND_KEYS_SIZE; i += AES_KEY_SIZE) {
+        unsigned char temp[AES_BLOCK_SIZE];
+        memcpy(temp, &round_keys[i - AES_BLOCK_SIZE], AES_BLOCK_SIZE);
+
+        if (i % AES_KEY_SIZE == 0) {
+            // Rotate word
+            unsigned char temp_byte = temp[0];
+            temp[0] = sbox[temp[1]] ^ rcon[i / AES_KEY_SIZE];
+            temp[1] = sbox[temp[2]];
+            temp[2] = sbox[temp[3]];
+            temp[3] = sbox[temp_byte];
+        } else if ((AES_KEY_SIZE > 6) && (i % AES_KEY_SIZE == 4)) {
+            // SubWord
+            for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+                temp[j] = sbox[temp[j]];
+            }
+        }
+
+        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+            round_keys[i + j] = round_keys[i - AES_KEY_SIZE + j] ^ temp[j];
+        }
+    }
