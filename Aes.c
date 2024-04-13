@@ -195,7 +195,7 @@ unsigned char * g (unsigned char wInput[4], int counter)
 }
 
 
-unsigned char * keyExpansion(unsigned char key[16])
+unsigned char * expand_key(unsigned char *cipher_key[16])
 {
     unsigned char words[44][4];
     for (int i = 0; i < 44; ++i)
@@ -211,7 +211,7 @@ unsigned char * keyExpansion(unsigned char key[16])
     int byteCount = 0; //this is to keep a count on the bytes of the expandedKey array
     
     for (int i=0;i<16;i++)
-            expandedKey[i] = key[i];
+            expandedKey[i] = cipher_key[i];
 
     for(int j=0;j<4;j++)
     {
