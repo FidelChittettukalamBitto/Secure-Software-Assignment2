@@ -1,7 +1,7 @@
-*
- * TODO: Add your name and student number here, along with
- *       a brief description of this code.
- */
+
+ //Name: Fidel Chittettukalam Bitto
+//Studentid: D23125253
+
 
 #ifndef RIJNDAEL_H
 #define RIJNDAEL_H
