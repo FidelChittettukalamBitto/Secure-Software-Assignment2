@@ -178,7 +178,7 @@ unsigned char *expand_key(const unsigned char *cipher_key) {
     return round_keys;
 }
 
-// AES encryption of a single block
+//  encryption 
 void aes_encrypt_block(unsigned char *block, unsigned char *cipher_key) {
     unsigned char *round_keys = expand_key(cipher_key);
 
@@ -204,7 +204,7 @@ void aes_encrypt_block(unsigned char *block, unsigned char *cipher_key) {
   return output;
 }
 
-// AES decryption of a single block
+// decryption 
 void aes_decrypt_block(unsigned char *block, unsigned char *cipher_key) {
     unsigned char *round_keys = expand_key(cipher_key);
 
