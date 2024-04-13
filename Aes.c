@@ -26,5 +26,55 @@ void _invMixColumns();
 
 uint8_t _gmult(uint8_t a, uint8_t b);
 void _printMatrix(int size, uint8_t matrix[size][size]);
+/*Public Functions*/
+
+
+void initialize(char * key_file, char * state_file, char* sbox_file, char* inv_sbox_file) {
+    _initFromFile(KEY_SIZE, key, key_file);
+    _initFromFile(STATE_SIZE, state, state_file);
+    _initFromFile(SBOX_SIZE, sbox, sbox_file);
+    _initFromFile(SBOX_SIZE, inv_sbox, inv_sbox_file);
+    memcpy(orig_msg, state, sizeof(uint8_t) * STATE_SIZE * STATE_SIZE);
+    _generateSubkeys();
+    initialize_called = 1;
+}
+
+
+void encrypt() {
+
+    assert(initialize_called);
+
+    printf("\nENCRYPTION PROCESS\n");
+    printf("------------------\n");
+
+    // start at 0 to print plaintext
+    int curr_round = 0;
+    printState(curr_round);
+
+
+    // initial round
+    _addRoundKey(curr_round);
+    curr_round += 1;
+    printState(curr_round);
+
+    // 9 rounds
+    while (curr_round < 10) {
+        _subByte(sbox);
+        _shiftRows();
+        _mixColumns();
+        _addRoundKey(curr_round);
+        curr_round += 1;
+        printState(curr_round);
+    }
+
+    // final round
+    _subByte(sbox);
+    _shiftRows();
+    _addRoundKey(curr_round);
+    curr_round += 1;
+    printState(curr_round);
+}
+
+
 
 
